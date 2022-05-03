@@ -91,7 +91,7 @@ void rbtree_insert_fixup(rbtree *t, node_t *z) {
       if (uncle->color == RBTREE_RED) {               
         z->parent->color = RBTREE_BLACK;
         uncle->color = RBTREE_BLACK;
-        z->parent->parent->color = RBTREE_RED;
+        z->parent->parent = RBTREE_RED;
         z = z->parent->parent;                        // 해당 구역은, 즉 해당 z를 root로 하는 트리는 처리했으니 위로 올라가서 다시 부모를 보고, 정확히 말하자면 while 조건을 따져보고 red라면 또 특성 4를 위반하게 되니 다시 보완해야 한다
         
       // 2. 경우 2, 3에 해당하는 것으로, uncle이 black이라면 z, parent, parent의 parent가 linear인지 혹은 triangle인지 따져보고 회전 및 색깔 조정을 해줘야 한다.
@@ -179,56 +179,51 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {   // rbtree만큼의 크기�
   rbtree_insert_fixup(t, z);                          // 특성이 위반되는 경우를 보완해주는 함수 호출
   
   // TODO: implement insert
-  return t->root;                                           // 새로 생성하여 삽입한 노드의 주소를 가르키는 포인터(주소값)를 반환한다.
-}  
+  return z;                                           // 새로 생성하여 삽입한 노드의 주소를 가르키는 포인터(주소값)를 반환한다.
+}
 
 // [노드 탐색]
 // <while문으로 탐색>
 // 계속된 함수 호출로 정적 메모리 영역 stack에 메모리를 할당하는 재귀에 비해 빠르다.
-node_t *rbtree_find(const rbtree *t, const key_t key) {
-  // 테스트 케이스에서 NULL을 요구한다.
-  if (t->root == t->nil) {
+// node_t *search_node(rbtree *t, node_t* root, const key_t key) {
+//   while(root != t->nil && key != root->key) {
+//     if (root->key > key) {
+//       root = root->left;
+//     } else {
+//       root = root->right;
+//     }
+//   }
+  
+//   // 탐색에 실패했다면 t->nil의 주소값을, 성공했다면 찾고자 하는 key와 동일한 키 값을 가진 노드(여기선 root)를 반환한다.
+//   return root;
+// }
+
+// <재귀로 탐색>
+node_t *search_node(rbtree *t, node_t* root, const key_t key) {     // 찾은 노드를 가르키는 포인터를 반환한다.
+  if (root == t->nil) {
     return NULL;
+  } else if (root->key == key) {
+    return root;
+  } else if (root->key < key) {
+    return search_node(t, root->right, key);
+  } else {
+    return search_node(t, root->left, key);
   }
-  node_t *x = t->root;
-  
-  while (x != t->nil) {
-    if (x->key > key) {
-      x = x->left;
-    } else if (x->key < key) {
-      x = x->right;
-    } else {
-      return x;
-    }
-  }
-  
+}   
+
+node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
-  return NULL;
+  return search_node(t, t->root, key);
 }
 
-// [min 노드 탐색]
-// 최솟값을 가진 노드 탐색 후 노드 반환
 node_t *rbtree_min(const rbtree *t) {
-  node_t *x = t->root;
-  
-  while (x->left != t->nil) {
-    x = x->left;
-  }
-  
   // TODO: implement find
-  return x;
+  return t->root;
 }
 
-// [max 노드 탐색]
-// 최댓값을 가진 노드 탐색 후 노드 반환
 node_t *rbtree_max(const rbtree *t) {
-  node_t *x = t->root;
-  
-  while (x->right != t->nil) {
-    x = x->right;
-  }
   // TODO: implement find
-  return x;
+  return t->root;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
@@ -241,7 +236,7 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
   return 0;
 }
 
-// [중위 순회, 테스트용]
+// [중위 순회]
 // 오름차순으로 데이터를 탐색한다.
 void inorder_tree_work(rbtree *t, node_t *x) {
   if (x != t->nil) {
@@ -250,15 +245,3 @@ void inorder_tree_work(rbtree *t, node_t *x) {
     inorder_tree_work(t, x->right);
   }
 }
-
-// int main()
-// {
-//   rbtree *t = new_rbtree();
-//   key_t entries[] = {10, 5, 8, 34, 67, 23, 156, 24, 2, 12};
-//   const size_t n = sizeof(entries) / sizeof(entries[0]);
-//   for (size_t i = 0; i < n; i++)
-//   {
-//     rbtree_insert(t, entries[i]);
-//   }
-//   inorder_tree_work(t, t->root);
-// }
