@@ -1,7 +1,7 @@
-# Red-Black Tree 구현 : https://velog.io/@metamong/%EB%A0%88%EB%93%9C-%EB%B8%94%EB%9E%99-%ED%8A%B8%EB%A6%ACRed-Black-Tree
+## Red-Black Tree 구현 
+구현하며 정리한 글 : https://velog.io/@metamong/%EB%A0%88%EB%93%9C-%EB%B8%94%EB%9E%99-%ED%8A%B8%EB%A6%ACRed-Black-Tree
 
 Balanced search tree로 많이 쓰이는 Red-black tree (이하 RB tree)를 C 언어로 구현하는 과제입니다.
-구현하는 추상 자료형 (ADT: abstract data type)은 ordered set, multiset 입니다.
 
 ## 구현 범위
 다음 기능들을 수행할 수 있도록 RB tree를 구현합니다.
